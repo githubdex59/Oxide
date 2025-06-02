@@ -8,7 +8,7 @@ public class ParseLine {
         System.out.println("ParseLine initialized");
     }
     public String parse(String line) {
-        if (line == "private static String string = \"IT WORKS!\";") {
+        if (line.endsWith("private static String string = \"IT WORKS!\";")) {
             return "private static Variable string = new Variable(\"string\", \"String\", \"IT WORKS!\");";
         }
         return line;

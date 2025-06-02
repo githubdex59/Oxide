@@ -39,16 +39,16 @@ public class Main {
 
         if (Temp.createNewFile()) {
             FileWriter myWriter = new FileWriter(Temp.getName());
-            WriteToJava writer = new WriteToJava();
-            writer.writeToJava(newLines, myWriter);
+            myWriter.write(String.join("", newLines));
+            myWriter.close();
 
         } else {
             System.out.println("Internal error, compiling files still exist, removing Temp.java");
             Temp.delete();
             // Continue
             FileWriter myWriter = new FileWriter(Temp.getName());
-            WriteToJava writer = new WriteToJava();
-            writer.writeToJava(newLines, myWriter);
+            myWriter.write(String.join("", newLines));
+            myWriter.close();
         }
         try {
             compileJavaFile(OutputName);
