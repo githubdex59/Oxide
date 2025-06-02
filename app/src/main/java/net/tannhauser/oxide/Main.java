@@ -1,11 +1,16 @@
 package net.tannhauser.oxide;
 
+import net.tannhauser.oxide.parser.ParseLine;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
+    private static ParseLine parseLine = new ParseLine();
+
     public static void main(String[] args) throws IOException {
         if (args.length < 2) {
             System.out.println("You buffoon, you didn't set a .pl to be compiled.");
@@ -25,17 +30,25 @@ public class Main {
         String content = scanner.useDelimiter("\\A").next();
         scanner.close();
 
+        String[] lines = content.split("\\r?\\n");
+        String[] newLines = new String[lines.length];
+        for (int i = 0; i < lines.length; i++) {
+            newLines[i] = parseLine.parse(lines[i]) + "\n";
+            System.out.println(newLines[i]);
+        }
+
         if (Temp.createNewFile()) {
             FileWriter myWriter = new FileWriter(Temp.getName());
-            myWriter.write(content);
-            myWriter.close();
+            WriteToJava writer = new WriteToJava();
+            writer.writeToJava(newLines, myWriter);
+
         } else {
             System.out.println("Internal error, compiling files still exist, removing Temp.java");
             Temp.delete();
             // Continue
             FileWriter myWriter = new FileWriter(Temp.getName());
-            myWriter.write(content);
-            myWriter.close();
+            WriteToJava writer = new WriteToJava();
+            writer.writeToJava(newLines, myWriter);
         }
         try {
             compileJavaFile(OutputName);
@@ -44,7 +57,7 @@ public class Main {
         }
     }
     public static void compileJavaFile(String javaFilePath) throws IOException, InterruptedException {
-        ProcessBuilder builder = new ProcessBuilder("javac", javaFilePath);
+        ProcessBuilder builder = new ProcessBuilder("javac", "-cp", "/home/r3pr/Projects/coffee/Oxide/app/build/libs/app.jar", javaFilePath);
         builder.redirectErrorStream(true);
 
         Process process = builder.start();
