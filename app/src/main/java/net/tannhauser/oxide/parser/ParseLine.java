@@ -1,6 +1,7 @@
 package net.tannhauser.oxide.parser;
 
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 public class ParseLine {
@@ -9,20 +10,14 @@ public class ParseLine {
     }
    public static String parse(String line) {
         Token token = new Token(line);
-        if (isVarDecl(line)) {
-            transpileVariable(token);
-        }
+       if (token.isVar()) {
+           return transpileVariable(token);
+       } else {
+           return line;
+       }
 
-       return line;
    }
 
-    private static final Pattern VAR_DECL_PATTERN = Pattern.compile(
-            "^\\s*(public|private|protected)?\\s*(static\\s+)?[a-zA-Z_][\\w<>\\[\\],\\s]*\\s+[a-zA-Z_]\\w*\\s*(=\\s*.+)?;"
-    );
-
-    public static boolean isVarDecl(String line) {
-        return VAR_DECL_PATTERN.matcher(line).matches();
-    }
 
 
     private static String transpileVariable(Token token) {
@@ -32,7 +27,7 @@ public class ParseLine {
        String type = "";
        String name = "";
        String value = "";
-
+        System.out.println(Arrays.toString(tokens));
        int i = 0;
 
        // Step 1: Visibility (optional)
