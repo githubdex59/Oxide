@@ -41,3 +41,8 @@ Well yes but actually no, it transpiles to java but there is a distinction
 
 Next question please
 
+## License
+Oxide should always remain free, so the MIT license is applied but with the following condition:
+No copies of the Software can be sold, modified or not.
+
+To see more, refer to `LICENSE.md`
