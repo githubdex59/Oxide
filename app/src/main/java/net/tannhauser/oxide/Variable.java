@@ -2,16 +2,22 @@ package net.tannhauser.oxide;
 
 import net.tannhauser.oxide.patches.NullPointer;
 
+import java.util.Optional;
+
 public class Variable {
     public String Name;
     public String Type;
     public Object Val;
     public Object prevVal;
 
-    public Variable(String name, String type, Object val) {
+    public Variable(String name, String type, Optional<Object> val) {
         this.Name = name;
         this.Type = type;
-        this.Val = val;
+        if (val.isEmpty()) {
+            this.Val = new NullPointer();
+        } else {
+            this.Val = val;
+        }
         this.prevVal = new NullPointer();
     }
 

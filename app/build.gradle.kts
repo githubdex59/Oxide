@@ -13,6 +13,9 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     implementation(libs.guava)
+    implementation("com.github.javaparser:javaparser-symbol-solver-core:3.26.4")
+    implementation("com.github.javaparser:javaparser-core:3.26.4")
+    implementation("com.github.javaparser:javaparser-core-serialization:3.26.4")
 }
 
 application {

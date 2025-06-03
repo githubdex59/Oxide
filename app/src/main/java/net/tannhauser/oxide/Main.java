@@ -33,7 +33,7 @@ public class Main {
         String[] lines = content.split("\\r?\\n");
         String[] newLines = new String[lines.length];
         for (int i = 0; i < lines.length; i++) {
-            newLines[i] = parseLine.parse(lines[i]) + "\n";
+            newLines[i] = parseLine.parse(lines[i]);
             System.out.println(newLines[i]);
         }
 
