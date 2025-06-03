@@ -1,1 +1,1 @@
-rm *.class Main.java Temp.java
+rm *.class *.java

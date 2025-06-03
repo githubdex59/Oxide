@@ -4,34 +4,34 @@ import net.tannhauser.oxide.patches.NullPointer;
 
 import java.util.Optional;
 
-public class Variable {
+public class Variable<T> {
     public String Name;
     public String Type;
-    public Object Val;
-    public Object prevVal;
+    public T Val;
+    public T prevVal;
 
-    public Variable(String name, String type, Optional<Object> val) {
+    public Variable(String name, String type, T val) {
         this.Name = name;
         this.Type = type;
-        if (val.isEmpty()) {
-            this.Val = new NullPointer();
-        } else {
-            this.Val = val;
-        }
-        this.prevVal = new NullPointer();
+//        if (val.isEmpty()) {
+//            this.Val = new NullPointer();
+//        } else {
+//            this.Val = val;
+//        }
+//        this.prevVal = new NullPointer();
     }
 
-    public void set(Object val) {
+    public void set(T val) {
         this.prevVal = this.Val;
         this.Val = val;
     }
 
-    public Object get() {
+    public T get() {
         return this.Val;
     }
 
     public void undo() {
         this.Val = this.prevVal;
-        this.prevVal = new NullPointer();
+        //this.prevVal = new NullPointer();
     }
 }

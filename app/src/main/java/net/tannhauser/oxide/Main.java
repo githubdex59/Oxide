@@ -5,35 +5,27 @@ import net.tannhauser.oxide.parser.ParseLine;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
-    private static ParseLine parseLine = new ParseLine();
 
     public static void main(String[] args) throws IOException {
-        if (args.length < 2) {
+        if (args.length < 1) {
             System.out.println("You buffoon, you didn't set a .pl to be compiled.");
             return;
         }
-        String OutputName = "";
-        if (args[1] != "1") {
-            OutputName = "Main.java";
-        } else if (args[1] == "0") {
-            OutputName = "Temp.java";
-        } else {
-            System.out.println("Set IsMain to 1 if the file is your main file else set to 0");
-        }
-
+        File newFile = new File(args[0]);
+        String OutputName = newFile.getName().replaceFirst("[.][^.]+$", "") + ".java";
         File Temp = new File(OutputName);
-        Scanner scanner = new Scanner(Paths.get(args[0]), StandardCharsets.UTF_8.name());
+        Scanner scanner = new Scanner(Paths.get(args[0]), StandardCharsets.UTF_8);
         String content = scanner.useDelimiter("\\A").next();
         scanner.close();
+
 
         String[] lines = content.split("\\r?\\n");
         String[] newLines = new String[lines.length];
         for (int i = 0; i < lines.length; i++) {
-            newLines[i] = parseLine.parse(lines[i]);
+            newLines[i] = ParseLine.parse(lines[i]) + "\n";
             System.out.println(newLines[i]);
         }
 
@@ -44,7 +36,8 @@ public class Main {
 
         } else {
             System.out.println("Internal error, compiling files still exist, removing Temp.java");
-            Temp.delete();
+            boolean delete = Temp.delete();
+            System.out.println(delete);
             // Continue
             FileWriter myWriter = new FileWriter(Temp.getName());
             myWriter.write(String.join("", newLines));
@@ -55,9 +48,12 @@ public class Main {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        boolean delete = Temp.delete();
+        System.out.println(delete);
     }
     public static void compileJavaFile(String javaFilePath) throws IOException, InterruptedException {
-        ProcessBuilder builder = new ProcessBuilder("javac", "-cp", "/home/r3pr/Projects/coffee/Oxide/app/build/libs/app.jar", javaFilePath);
+        ProcessBuilder builder = new ProcessBuilder("javac", "-cp", "/usr/lib/sail-software/oxidec.jar", javaFilePath);
         builder.redirectErrorStream(true);
 
         Process process = builder.start();

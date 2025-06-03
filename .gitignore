@@ -32,3 +32,8 @@ bin/
 
 # Ignore Gradle build output directory
 build
+
+release/app.jar
+release/oxidec
+release/oxidec.jar
+oxidecode

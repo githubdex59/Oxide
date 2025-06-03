@@ -2,6 +2,7 @@ package net.tannhauser.oxide.parser;
 
 
 import java.util.Arrays;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ParseLine {
@@ -11,74 +12,42 @@ public class ParseLine {
    public static String parse(String line) {
         Token token = new Token(line);
        if (token.isVar()) {
-           return transpileVariable(token);
+           return parseVariable(token);
        } else {
            return line;
        }
 
    }
+    public static String parseVariable(Token token) {
+        // Assume token.getLine() returns the original matched line
+        String line = token.LOC.trim();
 
+        // Regex to extract visibility, static, type, name, value
+        Pattern pattern = Pattern.compile(
+                "^\\s*(public|private|protected)?\\s*(static)?\\s*([A-Za-z_$][\\w\\[\\]<>]*)\\s+([A-Za-z_$][\\w]*)\\s*=\\s*(.+?)\\s*;\\s*$"
+        );
+        Matcher matcher = pattern.matcher(line);
 
+        if (!matcher.matches()) {
+            return "// Error: invalid variable declaration → " + line;
+        }
 
-    private static String transpileVariable(Token token) {
-        String[] tokens = token.tokenize();
-       String visibility = "";
-       String staticness = "";
-       String type = "";
-       String name = "";
-       String value = "";
-        System.out.println(Arrays.toString(tokens));
-       int i = 0;
+        String visibility = matcher.group(1) != null ? matcher.group(1) : "";
+        String staticism = matcher.group(2) != null ? matcher.group(2) : "";
+        String type = matcher.group(3);
+        String name = matcher.group(4);
+        String value = matcher.group(5);
 
-       // Step 1: Visibility (optional)
-       if (tokens[i].equals("public") || tokens[i].equals("private") || tokens[i].equals("protected")) {
-           visibility = tokens[i];
-           i++;
-       }
+        // Clean up spacing
+        visibility = visibility.isEmpty() ? "" : visibility + " ";
+        staticism = staticism.isEmpty() ? "" : staticism + " ";
 
-       // Step 2: Static (optional)
-       if (tokens[i].equals("static")) {
-           staticness = "static";
-           i++;
-       }
+        // Build formatted output
+        return String.format(
+                "%s%sVariable %s = new Variable<%s>(\"%s\", \"%s\", %s);",
+                visibility, staticism, name, type, name, type, value
+        );
+    }
 
-       // Step 3: Type
-       type = tokens[i];
-       i++;
-
-       // Step 4: Variable name
-       name = tokens[i];
-       i++;
-
-       // Step 5: Skip '='
-       if (tokens[i].equals("=")) {
-           i++;
-       }
-
-       // Step 6: Value (support values with spaces, e.g. strings)
-       StringBuilder valueBuilder = new StringBuilder();
-       while (i < tokens.length) {
-           String tok = tokens[i];
-           if (tok.endsWith(";")) {
-               valueBuilder.append(tok, 0, tok.length() - 1); // strip semicolon
-               break;
-           } else {
-               valueBuilder.append(tok).append(" ");
-           }
-           i++;
-       }
-       value = valueBuilder.toString().trim();
-
-       // Step 7: Build new LOC
-       StringBuilder newLine = new StringBuilder();
-       if (!visibility.isEmpty()) newLine.append(visibility).append(" ");
-       if (!staticness.isEmpty()) newLine.append(staticness).append(" ");
-       newLine.append("Variable ").append(name)
-               .append(" = new Variable(\"").append(name)
-               .append("\", \"").append(type)
-               .append("\", ").append(value).append(");");
-
-       return newLine.toString();
-   }
 
 }

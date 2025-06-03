@@ -33,4 +33,6 @@ tasks.jar {
     }
     from(sourceSets.main.get().output)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    destinationDirectory.set(file("${rootDir}/release"))
+    archiveFileName.set("oxidec.jar")
 }
